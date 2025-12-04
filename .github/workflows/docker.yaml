@@ -1,0 +1,60 @@
+name: Build and Push Image
+
+on:
+  push:
+    branches:
+      - uat
+      - production
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          echo "NODE_ENV=production" >> .env
+          echo "HOST=0.0.0.0" >> .env
+          echo "PORT=1337" >> .env
+
+          echo "APP_KEYS=${{ secrets.APP_KEYS }}" >> .env
+          echo "API_TOKEN_SALT=${{ secrets.API_TOKEN_SALT }}" >> .env
+          echo "ADMIN_JWT_SECRET=${{ secrets.ADMIN_JWT_SECRET }}" >> .env
+          echo "TRANSFER_TOKEN_SALT=${{ secrets.TRANSFER_TOKEN_SALT }}" >> .env
+          echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
+
+          echo "DATABASE_CLIENT=mysql" >> .env
+          echo "DATABASE_HOST=127.0.0.1" >> .env
+          echo "DATABASE_PORT=3306" >> .env
+          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
+          echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}" >> .env
+          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
+          echo "DATABASE_SSL=false" >> .env
+
+      - name: Login to private Docker registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.REGISTRY_URL }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build Docker image
+        run: |
+          IMAGE=${{ secrets.REGISTRY_URL }}/pixtern-be
+          GIT_SHA=$(echo $GITHUB_SHA | head -c 7)
+          TAG_SUFFIX=${GITHUB_REF_NAME}
+
+          docker build -t $IMAGE:${TAG_SUFFIX}-latest -t $IMAGE:${TAG_SUFFIX}-$GIT_SHA .
+
+      - name: Push Docker image
+        run: |
+          IMAGE=${{ secrets.REGISTRY_URL }}/pixtern-be
+          GIT_SHA=$(echo $GITHUB_SHA | head -c 7)
+          TAG_SUFFIX=${GITHUB_REF_NAME}
+
+          docker push $IMAGE:${TAG_SUFFIX}-latest
+          docker push $IMAGE:${TAG_SUFFIX}-$GIT_SHA
