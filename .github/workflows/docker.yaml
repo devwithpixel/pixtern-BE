@@ -28,7 +28,7 @@ jobs:
           echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
 
           echo "DATABASE_CLIENT=mysql" >> .env
-          echo "DATABASE_HOST=127.0.0.1" >> .env
+          echo "DATABASE_HOST=mysql" >> .env
           echo "DATABASE_PORT=3306" >> .env
           echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
           echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}" >> .env
