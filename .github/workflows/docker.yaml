@@ -25,6 +25,7 @@ jobs:
           echo "API_TOKEN_SALT=${{ secrets.API_TOKEN_SALT }}" >> .env
           echo "ADMIN_JWT_SECRET=${{ secrets.ADMIN_JWT_SECRET }}" >> .env
           echo "TRANSFER_TOKEN_SALT=${{ secrets.TRANSFER_TOKEN_SALT }}" >> .env
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
           echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" >> .env
 
           echo "DATABASE_CLIENT=mysql" >> .env
