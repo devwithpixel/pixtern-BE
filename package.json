@@ -16,10 +16,10 @@
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
   "dependencies": {
-    "@strapi/plugin-cloud": "5.23.4",
+    "@strapi/plugin-cloud": "5.33.2",
     "@strapi/plugin-color-picker": "^5.31.3",
-    "@strapi/plugin-users-permissions": "5.23.4",
-    "@strapi/strapi": "5.23.4",
+    "@strapi/plugin-users-permissions": "5.33.2",
+    "@strapi/strapi": "5.33.2",
     "fs-extra": "^10.1.0",
     "mime-types": "^2.1.35",
     "mysql2": "^3.15.3",

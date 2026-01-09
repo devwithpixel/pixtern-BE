@@ -1,26 +1,21 @@
-# Use the official Node.js image as a base
-FROM node:20.3.0-alpine
-
-# Install pnpm globally
-RUN npm install -g pnpm@9
-
-# Set the working directory inside the container
+# Builder
+FROM oven/bun:latest AS builder
 WORKDIR /app
 
-# Copy package.json, pnpm-lock.yaml and .npmrc if exists
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json bun.lock* ./
+RUN bun install
 
-# Install dependencies using pnpm
-RUN pnpm install --frozen-lockfile
-
-# Copy the rest of the Strapi project files
 COPY . .
+RUN bun run build
 
-# Expose the port that Strapi will run on
+# Production
+FROM oven/bun:latest AS production
+RUN useradd --user-group --create-home --shell /bin/bash strapi
+WORKDIR /app
+
+COPY --from=builder /app /app
+RUN chown -R strapi:strapi /app
+USER strapi
+
 EXPOSE 1337
-
-# Build Strapi
-RUN pnpm build
-
-# Start Strapi in production mode
-CMD ["pnpm", "start"]
+CMD ["bun", "run", "start"]
